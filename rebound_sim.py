@@ -18,6 +18,10 @@ sim.add(m=1.6, P=11)
 x_pos = np.empty((3,10))
 y_pos = np.empty((3,10))
 
+rebound.OrbitPlot(sim, unitlabel="[AU]", color=True)
+plt.show()
+
+
 # Array for time
 times = np.linspace(0,100,num=10)
 for i,t in enumerate(times):
@@ -31,8 +35,7 @@ for i,t in enumerate(times):
     x_pos[2,i] = sim.particles[2].x
     y_pos[2,i] = sim.particles[2].y
 
-plt.scatter(x_pos, y_pos)
-plt.show()
+
 
 
 

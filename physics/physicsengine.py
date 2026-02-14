@@ -24,3 +24,29 @@ class PhysicsEngine:
     def step(self, dt):
         self.sim.integrate(self.sim.t + dt)
 
+    def get_planet_positions(self):
+        positions = {}
+        for planet in self.planets:
+            p = planet.rebound_particle
+            positions[planet.name] = (p.x, p.y)
+        return positions
+    
+    def get_planet_velocities(self):
+        velocities = {}
+        for planet in self.planets:
+            p = planet.rebound_particle
+            velocities[planet.name] = (p.vx, p.vy)
+        return velocities
+    
+    def get_planet_masses(self):
+        masses = {}
+        for planet in self.planets:
+            p = planet.rebound_particle
+            masses[planet.name] = p.m
+        return masses
+    
+    def __synch_planets(self):
+        for planet in self.planets:
+            if (not planet.exists) : 
+                self.sim.remove(planet.rebound_particle)
+    
