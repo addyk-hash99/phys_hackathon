@@ -7,13 +7,12 @@ class SolarSystem:
 
         self.planets = [] # list of planets in the simulation
 
-    def add_planet(self, planet, x=0, y=0, vx=0, vy=0):
+    def add_planet(self, planet):
         # adding planet to the simulation
         particle = self.sim.add(
             m=planet.mass,
-            x=x, y=y,
-            vx=vx, vy=vy,
-            r=planet.radius
+            a=planet.distToSun, 
+            e=0
         )
 
         # linking planet to the particle in the simulation

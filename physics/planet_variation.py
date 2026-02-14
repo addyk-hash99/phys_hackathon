@@ -31,7 +31,7 @@ def spawn_planet_rel(player_mass):
     #placeholder for distance to Sun
     distToSun = random.uniform(1.0, 10.0)
 
-    return Planet(mass, radius, distToSun)
+    return Planet(mass, radius, distToSun, name=f"Planet {random.randint(0, 1000)}")
 
 def spawn_batch(player_mass, n=10):
     """

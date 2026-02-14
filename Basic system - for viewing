@@ -11,16 +11,13 @@ sim = rebound.Simulation()
 sim.units = ('AU', 'yr', 'Msun')
 sim.integrator = "ias15"
 
-sim.collision = None # we will handle collisions manually (in gamerules.py)
+sim.collision = "direct" # we will handle collisions manually (in gamerules.py)
+sim.collision_resolve = "merge" # when a collision happens, merge the two particles
 
 
 
 
 
-"""
-for i in range(0, 9):
-    solsys.add_planet(planet.Planet(mass=3e-6 + i*1e-7, radius=0.05 + i*0.03, distToSun=1.0 + i*0.2, name=f"Planet {i}"))
-    """
 
 SUN_MASS = 1.0
 sim.add(m=SUN_MASS)
@@ -29,6 +26,10 @@ sim.add(m=3e-6, a=1.0)  # Earth
 # Adding planets to the simulation
 solsys = SolarSystem(sim)
 
+
+for i in range(4):
+    solsys.add_planet(planet.Planet(mass=3e-6 + i*1e-8, radius=0.05 + i*0.002, distToSun=1.0 + 0.4 + i*0.001, name=f"Planet {i}"))
+    sim.move_to_com()
 
 
 sim.move_to_com()
@@ -99,11 +100,17 @@ while running:
     screen.fill((0, 0, 0))
 
     sun = sim.particles[0]
+
+
     sun_pos = CENTER + np.array([sun.x, -sun.y]) * SCALE
     pygame.draw.circle(screen, (255, 255, 0), sun_pos.astype(int), 10)
 
     earth_pos = CENTER + np.array([earth.x, -earth.y]) * SCALE
     pygame.draw.circle(screen, (100, 150, 255), earth_pos.astype(int), 6)
+
+    for i,p in enumerate(sim.particles[2:]):
+        planet_pos = CENTER + np.array([p.x, -p.y]) * SCALE
+        pygame.draw.circle(screen, (150, 100, 255), planet_pos.astype(int), 6)
 
     pygame.display.flip()
 
