@@ -43,8 +43,18 @@ def spawn_batch(player_mass, n=10):
     for i in range(n):
         planet = spawn_planet_rel(player_mass, i)
         planets.append(planet)
-
     return planets
+new_planets = spawn_batch(player.mass, 10)
+
+for planet in new_planets:
+    self.planets.append(planet)
+
+    sim.add(
+        m=planet.mass,
+        a=planet.distToSun
+    )
+
+    planet.rebound_particle = sim.particles[-1]
 
 
 
