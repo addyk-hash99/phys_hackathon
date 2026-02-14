@@ -18,7 +18,7 @@ sim.move_to_com()
 earth = sim.particles[1]
 
 dt = 0.002  # physics timestep (years)
-thrust_accel = 0.5     # acceleration magnitude (AU/yr^2)
+thrust_accel = 15     # acceleration magnitude (AU/yr^2)
 
 # 2. pygame 
 pygame.init()
