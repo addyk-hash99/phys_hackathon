@@ -7,7 +7,7 @@ import math
 import os
 
 # --- FILE PATH SETUP ---
-base_path = os.path.dirname(__file__)
+base_path = os.path.dirname(os.path.abspath(__file__)) if '__file__' in globals() else os.getcwd()
 
 # ==============================
 # 1. CLASSES & LOGIC
@@ -127,15 +127,16 @@ while running:
         if event.type == pygame.QUIT:
             running = False
 
-    if "earth" not in sim.particles:
+    # FIXED: Proper Earth existence check
+    try:
+        earth = sim.particles["earth"]
+    except (KeyError, AttributeError, IndexError):
         # Simple Game Over behavior
         screen.fill((50, 0, 0))
         pygame.display.flip()
         pygame.time.wait(2000)
         running = False
         continue
-
-    earth = sim.particles["earth"]
 
     # --- MOUSE FOLLOW CONTROL ---
     mouse_pos = np.array(pygame.mouse.get_pos())
