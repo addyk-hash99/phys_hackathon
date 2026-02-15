@@ -1,5 +1,5 @@
 from physics.solarsystem import SolarSystem
-from physics.planet_variation import spawn_batch
+from physics.planet_variation2 import spawn_batch
 
 import rebound
 import pygame
