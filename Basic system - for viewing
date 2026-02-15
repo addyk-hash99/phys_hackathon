@@ -11,8 +11,10 @@ sim = rebound.Simulation()
 sim.units = ('AU', 'yr', 'Msun')
 sim.integrator = "ias15"
 
-sim.collision = "direct" # we will handle collisions manually (in gamerules.py)
-sim.collision_resolve = "merge" # when a collision happens, merge the two particles
+# sim.collision = "direct" # we will handle collisions manually (in gamerules.py)
+# sim.collision_resolve = "merge" # when a collision happens, merge the two particles
+
+sim.collision = None # we will handle collisions manually (in gamerules.py)
 
 
 
@@ -28,7 +30,7 @@ solsys = SolarSystem(sim)
 
 
 for i in range(4):
-    solsys.add_planet(planet.Planet(mass=3e-6 + i*1e-8, radius=0.05 + i*0.002, distToSun=1.0 + 0.4 + i*0.001, name=f"Planet {i}"))
+    solsys.add_planet(planet.Planet(mass=3e-20 + i*1e-22, radius=0.05 + i*0.002, distToSun=1.0 + 0.4 + i*0.001, name=f"Planet {i}"))
     sim.move_to_com()
 
 
@@ -41,8 +43,11 @@ thrust_accel = 15     # acceleration magnitude (AU/yr^2)
 
 # 2. pygame 
 pygame.init()
-WIDTH, HEIGHT = 800, 800
-## screen = pygame.display.set_mode((WIDTH, HEIGHT))
+
+# Get current display size for fullscreen
+info = pygame.display.Info()
+WIDTH, HEIGHT = info.current_w, info.current_h
+
 screen = pygame.display.set_mode((0,0), pygame.FULLSCREEN)  # Fullscreen mode
 clock = pygame.time.Clock()
 
@@ -82,8 +87,9 @@ while running:
 
     
     if np.linalg.norm(thrust_vector) > 0:
+        speed_factor = 5.0
         thrust_vector = thrust_vector / np.linalg.norm(thrust_vector)
-        acceleration = thrust_vector * thrust_accel
+        acceleration = thrust_vector * thrust_accel * speed_factor
 
         # Apply deltav-vee - making new velocities from the old (vf = vi + a(delta T))
         earth.vx += acceleration[0] * dt

@@ -1,3 +1,5 @@
+from physics import planet
+from physics.solarsystem import SolarSystem
 import rebound
 import pygame
 import numpy as np
@@ -23,6 +25,14 @@ sim.add(m=3e-6, a=1.0, r=density(3e-6), hash="earth")
  # Earth
 
 sim.move_to_com()
+
+# Adding planets to the simulation
+solsys = SolarSystem(sim)
+
+
+for i in range(4):
+    solsys.add_planet(planet.Planet(mass=3e-20 + i*1e-22, radius=0.05 + i*0.002, distToSun=1.0 + 0.4 + i*0.001, name=f"Planet {i}"))
+    sim.move_to_com()
 
 earth = sim.particles["earth"]
 
