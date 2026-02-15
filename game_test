@@ -48,16 +48,37 @@ def spawn_batch(player_mass, sun_mass, n=10):
 def custom_merge(sim, collision):
     p1 = sim.particles[collision.p1]
     p2 = sim.particles[collision.p2]
+    
+    # WIN CONDITION: Earth eats Sun
+    if p1.hash == "earth" and p2.index == 0:  # Sun is always index 0
+        screen.fill((0, 200, 0))  # Green win screen
+        win_text = font.render("YOU ATE THE SUN! VICTORY!", True, (255,255,255))
+        screen.blit(win_text, (250, 400))
+        pygame.display.flip()
+        pygame.time.wait(3000)
+        sim.remove(p1.index)  # Remove Earth (game over anyway)
+        return
+    
+    if p1.index == 0 and p2.hash == "earth":  # Sun vs Earth (same)
+        screen.fill((0, 200, 0))  # Green win screen
+        win_text = font.render("YOU ATE THE SUN! VICTORY!", True, (255,255,255))
+        screen.blit(win_text, (250, 400))
+        pygame.display.flip()
+        pygame.time.wait(3000)
+        sim.remove(p2.index)
+        return
+    
+    # Earth vs Other planets
     if p1.hash == "earth" or p2.hash == "earth":
         earth = p1 if p1.hash == "earth" else p2
         other = p2 if earth == p1 else p1
         if earth.m >= other.m:
-            earth.m += other.m * 5
+            earth.m += other.m * 5  # Grow 5x!
             sim.remove(other.index)
         else:
-            sim.remove(earth.index)
+            sim.remove(earth.index)  # LOSE
     else:
-        sim.merge(collision)
+        sim.merge(collision)  # Normal planet merges
 
 # ==============================
 # 2. INITIALIZE SIMULATION
@@ -95,14 +116,21 @@ font = pygame.font.SysFont("Arial", 28, bold=True)
 # --- LOAD ASSETS ---
 def load_img(name, alpha=True):
     path = os.path.join(base_path, name)
-    img = pygame.image.load(path)
-    return img.convert_alpha() if alpha else img.convert()
+    try:
+        img = pygame.image.load(path)
+        return img.convert_alpha() if alpha else img.convert()
+    except:
+        # Fallback to colored circles if images missing
+        surf = pygame.Surface((64, 64))
+        surf.fill((255,255,0) if 'sun' in name else (0,100,255))
+        return surf
 
 sun_img_raw = load_img('sun.png')
 earth_img_raw = load_img('earth8.png')
 planet_img_raw = load_img('planet4.png')
 menu_raw = load_img('hub2.png', alpha=False)
-menu_raw.set_colorkey((255, 255, 255))
+if hasattr(menu_raw, 'set_colorkey'):
+    menu_raw.set_colorkey((255, 255, 255))
 
 # --- ASSET SCALING ---
 ui_scale = 0.5
@@ -127,14 +155,15 @@ while running:
         if event.type == pygame.QUIT:
             running = False
 
-    # FIXED: Proper Earth existence check
+    # Check if Earth still exists (LOSE condition)
     try:
         earth = sim.particles["earth"]
     except (KeyError, AttributeError, IndexError):
-        # Simple Game Over behavior
-        screen.fill((50, 0, 0))
+        screen.fill((50, 0, 0))  # Red lose screen
+        lose_text = font.render("EARTH DESTROYED - GAME OVER", True, (255,255,255))
+        screen.blit(lose_text, (200, 400))
         pygame.display.flip()
-        pygame.time.wait(2000)
+        pygame.time.wait(3000)
         running = False
         continue
 
@@ -165,11 +194,12 @@ while running:
     sim.integrate(sim.t + dt)
 
     # --- RENDER PLANETS ---
-    # Sun
-    sun = sim.particles[0]
-    sun_pos = CENTER + np.array([sun.x, -sun.y]) * SCALE
-    s_img = pygame.transform.scale(sun_img_raw, (40, 40))
-    screen.blit(s_img, s_img.get_rect(center=(int(sun_pos[0]), int(sun_pos[1]))))
+    # Sun (always index 0)
+    if sim.N > 0:
+        sun = sim.particles[0]
+        sun_pos = CENTER + np.array([sun.x, -sun.y]) * SCALE
+        s_img = pygame.transform.scale(sun_img_raw, (40, 40))
+        screen.blit(s_img, s_img.get_rect(center=(int(sun_pos[0]), int(sun_pos[1]))))
 
     # Earth
     earth_pos = CENTER + np.array([earth.x, -earth.y]) * SCALE
@@ -191,12 +221,12 @@ while running:
     # --- RENDER UI ---
     screen.blit(menu_img, menu_rect)
     
-    # Mass Display (Positioned at 117, 7 relative to menu_rect)
+    # Mass Display
     mass_val = round(earth.m * 1000000, 1)
     mass_surf = font.render(f"{mass_val}", True, (255, 255, 255))
     screen.blit(mass_surf, (menu_rect.x + 117, menu_rect.y + 7))
     
-    # Planet Count (Positioned at 120, 50 relative to menu_rect)
+    # Planet Count
     count_surf = font.render(f"{active_planets}", True, (255, 255, 255))
     screen.blit(count_surf, (menu_rect.x + 120, menu_rect.y + 50))
 
