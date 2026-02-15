@@ -1,23 +1,24 @@
+import random
+from physics import planet
+import numpy as np
 import rebound
+
 class SolarSystem:
     def __init__(self, simulation):
         self.sim = simulation
-        
-        
-
         self.planets = [] # list of planets in the simulation
 
-   def add_planet(self, planet):
-    theta = random.uniform(0, 2*np.pi)
-    particle = self.sim.add(
-        m=planet.mass,
-        a=planet.distToSun,
-        e=0,
-        f=theta   # random true anomaly
-    )
+    def add_planet(self, planet):
+        theta = random.uniform(0, 2*np.pi)
+        particle = self.sim.add(
+            m=planet.mass,
+            a=planet.distToSun,
+            e=0,
+            f=theta   # random true anomaly
+        )
 
-    planet.rebound_particle = particle
-    self.planets.append(planet)
+        planet.rebound_particle = particle
+        self.planets.append(planet)
 
 
 

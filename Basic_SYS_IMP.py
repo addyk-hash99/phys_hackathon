@@ -104,7 +104,7 @@ CENTER = np.array([WIDTH//2, HEIGHT//2])
 # 6. GAME LOOP
 # ==============================
 
-dt = 0.0002
+dt = 0.002
 thrust_accel = 15.0
 running = True
 
@@ -115,6 +115,9 @@ while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
+        elif event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_ESCAPE:
+                running = False
 
     keys = pygame.key.get_pressed()
 
@@ -140,7 +143,7 @@ while running:
 
     if np.linalg.norm(thrust) > 0:
         thrust = thrust / np.linalg.norm(thrust)
-        accel = thrust * thrust_accel
+        accel = thrust * thrust_accel * 5.0
         earth.vx += accel[0] * dt
         earth.vy += accel[1] * dt
 

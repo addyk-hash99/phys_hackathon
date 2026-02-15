@@ -1,4 +1,4 @@
-from planet import Planet
+from physics.planet import Planet
 import random
 
 def mass_to_radius(mass):
